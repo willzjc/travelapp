@@ -1,4 +1,4 @@
-# SplitCost
+# travelapp
 
 A React application for splitting expenses among group members during trips.
 

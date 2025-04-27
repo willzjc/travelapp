@@ -7,6 +7,7 @@ import {
   ListItem, ListItemText, Paper, Box, AppBar, Toolbar
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import PaidIcon from '@mui/icons-material/Paid';
 
 export default function Home() {
   const { groups, addGroup } = useApp();
@@ -35,8 +36,9 @@ export default function Home() {
     <>
       <AppBar position="static">
         <Toolbar>
+          <PaidIcon sx={{ mr: 2 }} />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            SplitCost
+            travelapp
           </Typography>
         </Toolbar>
       </AppBar>

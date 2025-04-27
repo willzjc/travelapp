@@ -22,7 +22,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppProvider>
-        <Router>
+        <Router basename="/travelapp">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/group/:groupId" element={<GroupDetail />} />
@@ -36,4 +36,3 @@ function App() {
 }
 
 export default App;
- 

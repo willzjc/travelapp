@@ -1,6 +1,6 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { Group, Person, Transaction, Debt } from '../types/models';
+import { Group, Transaction, Debt } from '../types/models';
 import { createDemoGroup } from '../utils/demoData';
 
 interface AppContextType {

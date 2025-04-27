@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
   Container, Typography, Button, TextField, Dialog,
   DialogTitle, DialogContent, DialogActions, List,
   ListItem, ListItemText, Paper, Box, Tabs, Tab,
   AppBar, Toolbar, IconButton, Card, CardContent,
-  Divider, ButtonGroup, ListItemSecondaryAction
+  Divider, ButtonGroup
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
