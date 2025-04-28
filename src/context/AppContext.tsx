@@ -13,6 +13,10 @@ interface AppContextType {
   editTransaction: (groupId: string, transactionId: string, transaction: Omit<Transaction, 'id'>) => void;
   deleteTransaction: (groupId: string, transactionId: string) => void;
   calculateDebts: (groupId: string) => Debt[];
+  mapLocation: string;
+  isMapOpen: boolean;
+  openMap: (location: string) => void;
+  closeMap: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -21,13 +25,40 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>(() => {
     // Check if there are existing groups in localStorage
     const savedGroups = localStorage.getItem('groups');
+    
     if (savedGroups) {
-      return JSON.parse(savedGroups);
+      try {
+        const parsedGroups = JSON.parse(savedGroups);
+        
+        // Check if the first group has transactions with location data
+        // If not, create fresh demo data instead
+        const hasLocationData = parsedGroups.length > 0 && 
+          parsedGroups[0].transactions?.some((t: Transaction) => t.location);
+        
+        if (hasLocationData) {
+          return parsedGroups;
+        }
+      } catch (e) {
+        console.error("Error parsing saved groups:", e);
+      }
     }
     
-    // If no groups exist, create a demo group
+    // If no valid groups exist or they don't have location data, create a fresh demo group
     return [createDemoGroup()];
   });
+
+  // Map side pane state
+  const [mapLocation, setMapLocation] = useState<string>('');
+  const [isMapOpen, setIsMapOpen] = useState<boolean>(false);
+
+  const openMap = (location: string) => {
+    setMapLocation(location);
+    setIsMapOpen(true);
+  };
+
+  const closeMap = () => {
+    setIsMapOpen(false);
+  };
 
   // Save groups to localStorage whenever they change
   useEffect(() => {
@@ -183,6 +214,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     editTransaction,
     deleteTransaction,
     calculateDebts,
+    mapLocation,
+    isMapOpen,
+    openMap,
+    closeMap,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

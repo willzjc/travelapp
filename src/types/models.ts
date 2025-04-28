@@ -10,6 +10,7 @@ export interface Transaction {
   date: string;
   paidById: string;
   participants: string[];
+  location?: string; // Add optional location field
 }
 
 export interface Group {

@@ -6,13 +6,15 @@ import {
   DialogTitle, DialogContent, DialogActions, List,
   ListItem, ListItemText, Paper, Box, Tabs, Tab,
   AppBar, Toolbar, IconButton, Card, CardContent,
-  Divider, ButtonGroup
+  Divider, ButtonGroup, Chip
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MapSidePane from '../components/MapSidePane';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,7 +40,7 @@ function TabPanel(props: TabPanelProps) {
 
 export default function GroupDetail() {
   const { groupId } = useParams<{ groupId: string }>();
-  const { getGroupById, addPerson, calculateDebts, deleteTransaction } = useApp();
+  const { getGroupById, addPerson, calculateDebts, deleteTransaction, openMap, isMapOpen, mapLocation, closeMap } = useApp();
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const [openAddPerson, setOpenAddPerson] = useState(false);
@@ -162,6 +164,19 @@ export default function GroupDetail() {
                     <Typography variant="body2">
                       Participants: {transaction.participants.map(id => findPersonName(id)).join(', ')}
                     </Typography>
+                    
+                    {transaction.location && (
+                      <Box sx={{ mt: 1 }}>
+                        <Chip
+                          icon={<LocationOnIcon />}
+                          label={transaction.location}
+                          onClick={() => openMap(transaction.location!)}
+                          size="small"
+                          sx={{ cursor: 'pointer' }}
+                        />
+                      </Box>
+                    )}
+                    
                     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                       <ButtonGroup variant="outlined" size="small">
                         <Button 
@@ -283,6 +298,13 @@ export default function GroupDetail() {
           </Button>
         </DialogActions>
       </Dialog>
+      
+      {/* Map Side Pane */}
+      <MapSidePane 
+        location={mapLocation}
+        open={isMapOpen}
+        onClose={closeMap}
+      />
     </>
   );
 }

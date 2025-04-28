@@ -4,9 +4,12 @@ import { useApp } from '../context/AppContext';
 import {
   Container, Typography, Button, TextField, FormControl,
   InputLabel, Select, MenuItem, FormGroup, FormControlLabel,
-  Checkbox, Box, AppBar, Toolbar, IconButton, Paper
+  Checkbox, Box, AppBar, Toolbar, IconButton, Paper,
+  CircularProgress, Snackbar, Alert
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { getCurrentLocation } from '../utils/location';
 
 export default function NewTransaction() {
   const { groupId } = useParams<{ groupId: string }>();
@@ -20,6 +23,9 @@ export default function NewTransaction() {
   const [paidById, setPaidById] = useState('');
   const [participants, setParticipants] = useState<string[]>([]);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [location, setLocation] = useState('');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const handleParticipantToggle = (personId: string) => {
     setParticipants(prev => {
@@ -42,10 +48,25 @@ export default function NewTransaction() {
       amount: parseFloat(amount),
       paidById,
       participants,
-      date
+      date,
+      location: location || undefined
     });
 
     navigate(`/group/${groupId}`);
+  };
+
+  const handleGetCurrentLocation = async () => {
+    setIsLoadingLocation(true);
+    setLocationError(null);
+    
+    try {
+      const address = await getCurrentLocation();
+      setLocation(address);
+    } catch (error) {
+      setLocationError(error instanceof Error ? error.message : 'Failed to get location');
+    } finally {
+      setIsLoadingLocation(false);
+    }
   };
 
   if (!group) {
@@ -127,6 +148,34 @@ export default function NewTransaction() {
               required
             />
             
+            <TextField
+              label="Location (optional)"
+              fullWidth
+              margin="normal"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g., Sydney Opera House, Australia"
+              helperText="Location will be shown on Google Maps when clicked"
+            />
+
+            <Box sx={{ mt: 1, mb: 2 }}>
+              <Button
+                onClick={handleGetCurrentLocation}
+                disabled={isLoadingLocation}
+                startIcon={isLoadingLocation ? <CircularProgress size={20} /> : <LocationOnIcon />}
+                variant="outlined"
+                fullWidth
+                sx={{ 
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '48px'
+                }}
+              >
+                {isLoadingLocation ? 'Getting Location...' : 'Use My Current Location'}
+              </Button>
+            </Box>
+            
             <Typography variant="subtitle1" sx={{ mt: 2 }}>
               Participants
             </Typography>
@@ -164,6 +213,16 @@ export default function NewTransaction() {
           </form>
         </Paper>
       </Container>
+
+      <Snackbar 
+        open={locationError !== null} 
+        autoHideDuration={6000} 
+        onClose={() => setLocationError(null)}
+      >
+        <Alert onClose={() => setLocationError(null)} severity="error">
+          {locationError}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

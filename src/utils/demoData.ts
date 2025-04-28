@@ -29,7 +29,8 @@ export function createDemoGroup(): Group {
         amount: 120,
         date: today,
         paidById: michaelId,
-        participants: [michaelId, andrewId]
+        participants: [michaelId, andrewId],
+        location: "The Grounds of Alexandria, Sydney"
       },
       {
         id: activityTransactionId,
@@ -37,7 +38,8 @@ export function createDemoGroup(): Group {
         amount: 180,
         date: today,
         paidById: jamesId,
-        participants: [michaelId, andrewId, jamesId]
+        participants: [michaelId, andrewId, jamesId],
+        location: "Sydney Opera House, Bennelong Point"
       }
     ]
   };
