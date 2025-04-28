@@ -6,7 +6,7 @@ import {
   DialogTitle, DialogContent, DialogActions, List,
   ListItem, ListItemText, Paper, Box, Tabs, Tab,
   AppBar, Toolbar, IconButton, Card, CardContent,
-  Divider, ButtonGroup, Chip
+  Divider, ButtonGroup, Chip, Menu, MenuItem
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
@@ -14,6 +14,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MapSidePane from '../components/MapSidePane';
 
 interface TabPanelProps {
@@ -40,13 +41,15 @@ function TabPanel(props: TabPanelProps) {
 
 export default function GroupDetail() {
   const { groupId } = useParams<{ groupId: string }>();
-  const { getGroupById, addPerson, calculateDebts, deleteTransaction, openMap, isMapOpen, mapLocation, closeMap } = useApp();
+  const { getGroupById, addPerson, calculateDebts, deleteTransaction, deleteGroup, openMap, isMapOpen, mapLocation, closeMap } = useApp();
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const [openAddPerson, setOpenAddPerson] = useState(false);
   const [personName, setPersonName] = useState('');
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
+  const [deleteGroupConfirmOpen, setDeleteGroupConfirmOpen] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   const group = groupId ? getGroupById(groupId) : undefined;
   const debts = groupId ? calculateDebts(groupId) : [];
@@ -89,6 +92,31 @@ export default function GroupDetail() {
     setTransactionToDelete(null);
   };
 
+  const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
+  const handleDeleteGroupClick = () => {
+    handleMenuClose();
+    setDeleteGroupConfirmOpen(true);
+  };
+
+  const handleDeleteGroupConfirm = () => {
+    if (groupId) {
+      deleteGroup(groupId);
+      setDeleteGroupConfirmOpen(false);
+      navigate('/');
+    }
+  };
+
+  const handleDeleteGroupCancel = () => {
+    setDeleteGroupConfirmOpen(false);
+  };
+
   if (!group) {
     return <Typography>Group not found!</Typography>;
   }
@@ -113,6 +141,24 @@ export default function GroupDetail() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {group.name}
           </Typography>
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="menu"
+            onClick={handleMenuOpen}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleDeleteGroupClick} sx={{ color: 'error.main' }}>
+              <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
+              Delete Group
+            </MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Container maxWidth="md" sx={{ mt: 4 }}>
@@ -295,6 +341,26 @@ export default function GroupDetail() {
           <Button onClick={handleDeleteCancel}>Cancel</Button>
           <Button onClick={handleDeleteConfirm} variant="contained" color="error">
             Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      {/* Delete Group Confirmation Dialog */}
+      <Dialog
+        open={deleteGroupConfirmOpen}
+        onClose={handleDeleteGroupCancel}
+      >
+        <DialogTitle>Delete Group</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete this entire group and all its transactions? 
+            This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteGroupCancel}>Cancel</Button>
+          <Button onClick={handleDeleteGroupConfirm} variant="contained" color="error">
+            Delete Group
           </Button>
         </DialogActions>
       </Dialog>

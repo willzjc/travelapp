@@ -5,15 +5,17 @@ import {
   Container, Typography, Button, TextField, FormControl,
   InputLabel, Select, MenuItem, FormGroup, FormControlLabel,
   Checkbox, Box, AppBar, Toolbar, IconButton, Paper,
-  CircularProgress, Snackbar, Alert
+  CircularProgress, Snackbar, Alert, Dialog, DialogActions, 
+  DialogContent, DialogTitle
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { getCurrentLocation } from '../utils/location';
 
 export default function EditTransaction() {
   const { groupId, transactionId } = useParams<{ groupId: string, transactionId: string }>();
-  const { getGroupById, getTransactionById, editTransaction } = useApp();
+  const { getGroupById, getTransactionById, editTransaction, deleteTransaction } = useApp();
   const navigate = useNavigate();
 
   const group = groupId ? getGroupById(groupId) : undefined;
@@ -27,6 +29,7 @@ export default function EditTransaction() {
   const [location, setLocation] = useState('');
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (transaction) {
@@ -79,6 +82,22 @@ export default function EditTransaction() {
     } finally {
       setIsLoadingLocation(false);
     }
+  };
+
+  const handleDeleteClick = () => {
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (groupId && transactionId) {
+      deleteTransaction(groupId, transactionId);
+      setDeleteConfirmOpen(false);
+      navigate(`/group/${groupId}`);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmOpen(false);
   };
 
   if (!group || !transaction) {
@@ -206,21 +225,33 @@ export default function EditTransaction() {
               ))}
             </FormGroup>
 
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Button 
-                component={Link} 
-                to={`/group/${groupId}`} 
-                variant="outlined"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
                 variant="contained" 
-                color="primary"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={handleDeleteClick}
+                sx={{ minHeight: '42px' }}
               >
-                Save Changes
+                Delete Transaction
               </Button>
+              
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button 
+                  component={Link} 
+                  to={`/group/${groupId}`} 
+                  variant="outlined"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  color="primary"
+                >
+                  Save Changes
+                </Button>
+              </Box>
             </Box>
           </form>
         </Paper>
@@ -235,6 +266,22 @@ export default function EditTransaction() {
           {locationError}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={handleDeleteCancel}
+      >
+        <DialogTitle>Delete Transaction</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this transaction? This action cannot be undone.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

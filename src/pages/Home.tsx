@@ -4,16 +4,20 @@ import { useApp } from '../context/AppContext';
 import {
   Container, Typography, Button, TextField, Dialog,
   DialogTitle, DialogContent, DialogActions, List,
-  ListItem, ListItemText, Paper, Box, AppBar, Toolbar
+  ListItem, ListItemText, Paper, Box, AppBar, Toolbar,
+  IconButton, ListItemSecondaryAction
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PaidIcon from '@mui/icons-material/Paid';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function Home() {
-  const { groups, addGroup } = useApp();
+  const { groups, addGroup, deleteGroup } = useApp();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
 
   const handleOpen = () => {
     setOpen(true);
@@ -30,6 +34,25 @@ export default function Home() {
       handleClose();
       navigate(`/group/${newGroupId}`);
     }
+  };
+
+  const handleDeleteClick = (event: React.MouseEvent, groupId: string) => {
+    event.stopPropagation();
+    setGroupToDelete(groupId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (groupToDelete) {
+      deleteGroup(groupToDelete);
+      setDeleteConfirmOpen(false);
+      setGroupToDelete(null);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirmOpen(false);
+    setGroupToDelete(null);
   };
 
   return (
@@ -77,6 +100,16 @@ export default function Home() {
                     primary={group.name}
                     secondary={`${group.people.length} people · ${group.transactions.length} transactions`}
                   />
+                  <ListItemSecondaryAction>
+                    <IconButton 
+                      edge="end" 
+                      aria-label="delete"
+                      onClick={(e) => handleDeleteClick(e, group.id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
                 </ListItem>
               ))}
             </List>
@@ -102,6 +135,25 @@ export default function Home() {
             <Button onClick={handleClose}>Cancel</Button>
             <Button onClick={handleCreateGroup} variant="contained" color="primary">
               Create
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={deleteConfirmOpen}
+          onClose={handleDeleteCancel}
+        >
+          <DialogTitle>Delete Group</DialogTitle>
+          <DialogContent>
+            <Typography>
+              Are you sure you want to delete this group and all its transactions?
+              This action cannot be undone.
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDeleteCancel}>Cancel</Button>
+            <Button onClick={handleDeleteConfirm} variant="contained" color="error">
+              Delete
             </Button>
           </DialogActions>
         </Dialog>

@@ -12,6 +12,7 @@ interface AppContextType {
   getTransactionById: (groupId: string, transactionId: string) => Transaction | undefined;
   editTransaction: (groupId: string, transactionId: string, transaction: Omit<Transaction, 'id'>) => void;
   deleteTransaction: (groupId: string, transactionId: string) => void;
+  deleteGroup: (groupId: string) => void;
   calculateDebts: (groupId: string) => Debt[];
   mapLocation: string;
   isMapOpen: boolean;
@@ -137,6 +138,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }));
   };
 
+  const deleteGroup = (groupId: string) => {
+    setGroups(groups.filter(group => group.id !== groupId));
+  };
+
   const calculateDebts = (groupId: string): Debt[] => {
     const group = getGroupById(groupId);
     if (!group) return [];
@@ -213,6 +218,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     getTransactionById,
     editTransaction,
     deleteTransaction,
+    deleteGroup,
     calculateDebts,
     mapLocation,
     isMapOpen,
