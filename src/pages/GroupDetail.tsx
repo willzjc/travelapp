@@ -176,6 +176,22 @@ export default function GroupDetail() {
     return person ? person.name : 'Unknown';
   };
 
+  // Add a helper function to format date and time for display
+  const formatDateTime = (dateTimeString: string) => {
+    try {
+      const date = new Date(dateTimeString);
+      return date.toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (e) {
+      return dateTimeString; // Fallback to the original string if parsing fails
+    }
+  };
+
   return (
     <>
       <AppBar position="static">
@@ -229,7 +245,7 @@ export default function GroupDetail() {
                     <CardContent>
                       <Typography variant="h6">{transaction.description}</Typography>
                       <Typography color="text.secondary">
-                        {new Date(transaction.date).toLocaleDateString()}
+                        {formatDateTime(transaction.date)}
                       </Typography>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                         <Typography variant="body1">

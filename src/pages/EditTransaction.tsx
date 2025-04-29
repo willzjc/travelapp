@@ -209,8 +209,8 @@ export default function EditTransaction() {
             </FormControl>
 
             <TextField
-              label="Date"
-              type="date"
+              label="Date and Time"
+              type="datetime-local"
               fullWidth
               margin="normal"
               value={date}

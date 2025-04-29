@@ -11,8 +11,14 @@ export function createDemoGroup(): Group {
   const lunchTransactionId = uuidv4();
   const activityTransactionId = uuidv4();
 
-  // Get today's date
-  const today = new Date().toISOString().split('T')[0];
+  // Get current date and time
+  const now = new Date();
+  const dateTimeString = `${now.toISOString().split('T')[0]}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+  // Create an earlier time for the first transaction
+  const earlier = new Date(now);
+  earlier.setHours(earlier.getHours() - 3); // 3 hours earlier
+  const earlierDateTimeString = `${earlier.toISOString().split('T')[0]}T${String(earlier.getHours()).padStart(2, '0')}:${String(earlier.getMinutes()).padStart(2, '0')}`;
 
   return {
     id: uuidv4(),
@@ -27,7 +33,7 @@ export function createDemoGroup(): Group {
         id: lunchTransactionId,
         description: 'Lunch',
         amount: 120,
-        date: today,
+        date: earlierDateTimeString,
         paidById: michaelId,
         participants: [michaelId, andrewId],
         location: 'The Grounds of Alexandria, Sydney',
@@ -36,7 +42,7 @@ export function createDemoGroup(): Group {
         id: activityTransactionId,
         description: 'Activity',
         amount: 180,
-        date: today,
+        date: dateTimeString,
         paidById: jamesId,
         participants: [michaelId, andrewId, jamesId],
         location: 'Sydney Opera House, Bennelong Point',

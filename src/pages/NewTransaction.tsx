@@ -37,7 +37,9 @@ export default function NewTransaction() {
   const [amount, setAmount] = useState('');
   const [paidById, setPaidById] = useState('');
   const [participants, setParticipants] = useState<string[]>([]);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const now = new Date();
+  const initialDateTime = `${now.toISOString().split('T')[0]}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const [date, setDate] = useState(initialDateTime);
   const [location, setLocation] = useState('');
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
@@ -168,8 +170,8 @@ export default function NewTransaction() {
             </FormControl>
 
             <TextField
-              label="Date"
-              type="date"
+              label="Date and Time"
+              type="datetime-local"
               fullWidth
               margin="normal"
               value={date}
