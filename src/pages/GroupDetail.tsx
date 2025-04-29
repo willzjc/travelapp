@@ -9,6 +9,7 @@ import {
   Divider, ButtonGroup, Chip, Menu, MenuItem,
   SpeedDial
 } from '@mui/material';
+import { useSwipeable } from 'react-swipeable';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -118,6 +119,24 @@ export default function GroupDetail() {
     setDeleteGroupConfirmOpen(false);
   };
 
+  // Swipe handlers for tab navigation
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      // Navigate to the next tab (if not on the last tab)
+      if (value < 2) {
+        setValue(value + 1);
+      }
+    },
+    onSwipedRight: () => {
+      // Navigate to the previous tab (if not on the first tab)
+      if (value > 0) {
+        setValue(value - 1);
+      }
+    },
+    trackMouse: false, // Only track touch gestures, not mouse movements
+    preventScrollOnSwipe: true, // Prevent page scrolling during the swipe
+  });
+
   if (!group) {
     return <Typography>Group not found!</Typography>;
   }
@@ -171,122 +190,124 @@ export default function GroupDetail() {
           </Tabs>
         </Box>
 
-        <TabPanel value={value} index={0}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" component="h2">
-              Transactions
-            </Typography>
-          </Box>
-
-          {group.transactions.length === 0 ? (
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body1">
-                No transactions yet. Add one to get started!
+        <div {...swipeHandlers}>
+          <TabPanel value={value} index={0}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h5" component="h2">
+                Transactions
               </Typography>
-            </Paper>
-          ) : (
-            <List>
-              {group.transactions.map((transaction) => (
-                <Card key={transaction.id} sx={{ mb: 2 }}>
-                  <CardContent>
-                    <Typography variant="h6">{transaction.description}</Typography>
-                    <Typography color="text.secondary">
-                      {new Date(transaction.date).toLocaleDateString()}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                      <Typography variant="body1">
-                        Paid by: {findPersonName(transaction.paidById)}
+            </Box>
+
+            {group.transactions.length === 0 ? (
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="body1">
+                  No transactions yet. Add one to get started!
+                </Typography>
+              </Paper>
+            ) : (
+              <List>
+                {group.transactions.map((transaction) => (
+                  <Card key={transaction.id} sx={{ mb: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6">{transaction.description}</Typography>
+                      <Typography color="text.secondary">
+                        {new Date(transaction.date).toLocaleDateString()}
                       </Typography>
-                      <Typography variant="h6">${transaction.amount.toFixed(2)}</Typography>
-                    </Box>
-                    <Divider sx={{ my: 1 }} />
-                    <Typography variant="body2">
-                      Participants: {transaction.participants.map(id => findPersonName(id)).join(', ')}
-                    </Typography>
-                    
-                    {transaction.location && (
-                      <Box sx={{ mt: 1 }}>
-                        <Chip
-                          icon={<LocationOnIcon />}
-                          label={transaction.location}
-                          onClick={() => openMap(transaction.location!)}
-                          size="small"
-                          sx={{ cursor: 'pointer' }}
-                        />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                        <Typography variant="body1">
+                          Paid by: {findPersonName(transaction.paidById)}
+                        </Typography>
+                        <Typography variant="h6">${transaction.amount.toFixed(2)}</Typography>
                       </Box>
-                    )}
-                    
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                      <ButtonGroup variant="outlined" size="small">
-                        <Button 
-                          startIcon={<EditIcon />}
-                          onClick={() => navigate(`/group/${groupId}/transaction/${transaction.id}/edit`)}
-                        >
-                          Edit
-                        </Button>
-                        <Button 
-                          startIcon={<DeleteIcon />} 
-                          color="error"
-                          onClick={() => handleDeleteClick(transaction.id)}
-                        >
-                          Delete
-                        </Button>
-                      </ButtonGroup>
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
-            </List>
-          )}
-        </TabPanel>
+                      <Divider sx={{ my: 1 }} />
+                      <Typography variant="body2">
+                        Participants: {transaction.participants.map(id => findPersonName(id)).join(', ')}
+                      </Typography>
+                      
+                      {transaction.location && (
+                        <Box sx={{ mt: 1 }}>
+                          <Chip
+                            icon={<LocationOnIcon />}
+                            label={transaction.location}
+                            onClick={() => openMap(transaction.location!)}
+                            size="small"
+                            sx={{ cursor: 'pointer' }}
+                          />
+                        </Box>
+                      )}
+                      
+                      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <ButtonGroup variant="outlined" size="small">
+                          <Button 
+                            startIcon={<EditIcon />}
+                            onClick={() => navigate(`/group/${groupId}/transaction/${transaction.id}/edit`)}
+                          >
+                            Edit
+                          </Button>
+                          <Button 
+                            startIcon={<DeleteIcon />} 
+                            color="error"
+                            onClick={() => handleDeleteClick(transaction.id)}
+                          >
+                            Delete
+                          </Button>
+                        </ButtonGroup>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))}
+              </List>
+            )}
+          </TabPanel>
 
-        <TabPanel value={value} index={1}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h5" component="h2">
-              People
+          <TabPanel value={value} index={1}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+              <Typography variant="h5" component="h2">
+                People
+              </Typography>
+            </Box>
+
+            {group.people.length === 0 ? (
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="body1">
+                  No people added yet. Add people to your group!
+                </Typography>
+              </Paper>
+            ) : (
+              <List>
+                {group.people.map((person) => (
+                  <ListItem key={person.id} divider>
+                    <ListItemText primary={person.name} />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </TabPanel>
+
+          <TabPanel value={value} index={2}>
+            <Typography variant="h5" component="h2" gutterBottom>
+              Summary
             </Typography>
-          </Box>
 
-          {group.people.length === 0 ? (
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body1">
-                No people added yet. Add people to your group!
-              </Typography>
-            </Paper>
-          ) : (
-            <List>
-              {group.people.map((person) => (
-                <ListItem key={person.id} divider>
-                  <ListItemText primary={person.name} />
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </TabPanel>
-
-        <TabPanel value={value} index={2}>
-          <Typography variant="h5" component="h2" gutterBottom>
-            Summary
-          </Typography>
-
-          {debts.length === 0 ? (
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="body1">
-                No debts to settle. Add some transactions first!
-              </Typography>
-            </Paper>
-          ) : (
-            <List>
-              {debts.map((debt, index) => (
-                <ListItem key={index} divider>
-                  <ListItemText 
-                    primary={`${findPersonName(debt.fromPersonId)} owes ${findPersonName(debt.toPersonId)} $${debt.amount.toFixed(2)}`} 
-                  />
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </TabPanel>
+            {debts.length === 0 ? (
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="body1">
+                  No debts to settle. Add some transactions first!
+                </Typography>
+              </Paper>
+            ) : (
+              <List>
+                {debts.map((debt, index) => (
+                  <ListItem key={index} divider>
+                    <ListItemText 
+                      primary={`${findPersonName(debt.fromPersonId)} owes ${findPersonName(debt.toPersonId)} $${debt.amount.toFixed(2)}`} 
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </TabPanel>
+        </div>
       </Container>
 
       {/* Add Person Dialog */}
