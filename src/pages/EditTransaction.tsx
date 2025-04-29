@@ -41,6 +41,22 @@ export default function EditTransaction() {
       setLocation(transaction.location || '');
     }
   }, [transaction]);
+  
+  // Add ESC key handler
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && groupId) {
+        navigate(`/group/${groupId}`);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    
+    // Clean up the event listener when component unmounts
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [groupId, navigate]);
 
   const handleParticipantToggle = (personId: string) => {
     setParticipants(prev => {

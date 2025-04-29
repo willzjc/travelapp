@@ -6,15 +6,16 @@ import {
   DialogTitle, DialogContent, DialogActions, List,
   ListItem, ListItemText, Paper, Box, Tabs, Tab,
   AppBar, Toolbar, IconButton, Card, CardContent,
-  Divider, ButtonGroup, Chip, Menu, MenuItem
+  Divider, ButtonGroup, Chip, Menu, MenuItem,
+  SpeedDial
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import AddIcon from '@mui/icons-material/Add';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PersonIcon from '@mui/icons-material/Person';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import MapSidePane from '../components/MapSidePane';
 
 interface TabPanelProps {
@@ -175,14 +176,6 @@ export default function GroupDetail() {
             <Typography variant="h5" component="h2">
               Transactions
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={() => navigate(`/group/${groupId}/transaction/new`)}
-            >
-              Add Transaction
-            </Button>
           </Box>
 
           {group.transactions.length === 0 ? (
@@ -252,14 +245,6 @@ export default function GroupDetail() {
             <Typography variant="h5" component="h2">
               People
             </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<PersonAddIcon />}
-              onClick={handleOpenAddPerson}
-            >
-              Add Person
-            </Button>
           </Box>
 
           {group.people.length === 0 ? (
@@ -370,6 +355,22 @@ export default function GroupDetail() {
         location={mapLocation}
         open={isMapOpen}
         onClose={closeMap}
+      />
+
+      {/* Add floating SpeedDial for adding transactions or people based on current tab */}
+      <SpeedDial
+        ariaLabel={value === 1 ? "Add Person" : "Add Transaction"}
+        sx={{ position: 'fixed', bottom: 16, right: 16 }}
+        icon={value === 1 ? <PersonIcon /> : <ReceiptIcon />}
+        onClick={() => {
+          if (value === 1) {
+            // On People tab - open add person dialog
+            handleOpenAddPerson();
+          } else {
+            // On Transactions or other tabs - navigate to new transaction
+            navigate(`/group/${groupId}/transaction/new`);
+          }
+        }}
       />
     </>
   );

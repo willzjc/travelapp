@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  Container, Typography, Button, TextField, Dialog,
+  Container, Typography, TextField, Dialog,
   DialogTitle, DialogContent, DialogActions, List,
   ListItem, ListItemText, Paper, Box, AppBar, Toolbar,
-  IconButton, ListItemSecondaryAction
+  IconButton, ListItemSecondaryAction, SpeedDial, SpeedDialIcon,
+  Button
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import PaidIcon from '@mui/icons-material/Paid';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -70,14 +70,6 @@ export default function Home() {
           <Typography variant="h4" component="h1">
             Your Trip Groups
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleOpen}
-          >
-            New Group
-          </Button>
         </Box>
 
         {groups.length === 0 ? (
@@ -115,6 +107,13 @@ export default function Home() {
             </List>
           </Paper>
         )}
+
+        <SpeedDial
+          ariaLabel="Create new group"
+          sx={{ position: 'fixed', bottom: 16, right: 16 }}
+          icon={<SpeedDialIcon />}
+          onClick={handleOpen}
+        />
 
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Create a New Group</DialogTitle>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
@@ -68,6 +68,23 @@ export default function NewTransaction() {
       setIsLoadingLocation(false);
     }
   };
+
+  // Add ESC key handler
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        navigate(`/group/${groupId}`);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleEscKey);
+    
+    // Remove event listener on cleanup
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [groupId, navigate]);
 
   if (!group) {
     return <Typography>Group not found!</Typography>;
