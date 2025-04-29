@@ -12,7 +12,11 @@ export const getCurrentLocation = (): Promise<string> => {
     // Handle iOS permission issues
     const handlePermissionError = (error: GeolocationPositionError) => {
       if (error.code === error.PERMISSION_DENIED) {
-        reject(new Error('Location permission denied. Please enable location services in your device settings.'));
+        reject(
+          new Error(
+            'Location permission denied. Please enable location services in your device settings.'
+          )
+        );
       } else if (error.code === error.TIMEOUT) {
         reject(new Error('Location request timed out. Please try again.'));
       } else {
@@ -29,11 +33,11 @@ export const getCurrentLocation = (): Promise<string> => {
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
           );
-          
+
           if (!response.ok) {
             throw new Error('Failed to get address from coordinates');
           }
-          
+
           const data = await response.json();
           const address = data.display_name;
           resolve(address);

@@ -73,7 +73,7 @@ const MapSidePane: React.FC<MapSidePaneProps> = ({ location, open, onClose }) =>
           zIndex: 1300,
           boxShadow: '-2px 0 10px rgba(0, 0, 0, 0.1)',
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
         }}
       >
         {/* Resize handle */}
@@ -92,7 +92,7 @@ const MapSidePane: React.FC<MapSidePaneProps> = ({ location, open, onClose }) =>
             },
             '&:active': {
               backgroundColor: 'rgba(0, 0, 0, 0.2)',
-            }
+            },
           }}
           onMouseDown={handleMouseDown}
         />

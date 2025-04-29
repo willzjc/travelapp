@@ -24,19 +24,13 @@ function MapContainer() {
   const { location } = useParams();
   const navigate = useNavigate();
   const [open, setOpen] = useState(true);
-  
+
   const handleClose = () => {
     setOpen(false);
     navigate(-1); // Go back when the map is closed
   };
 
-  return (
-    <MapSidePane 
-      location={location || ''} 
-      open={open} 
-      onClose={handleClose} 
-    />
-  );
+  return <MapSidePane location={location || ''} open={open} onClose={handleClose} />;
 }
 
 function App() {
@@ -50,7 +44,10 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/group/:groupId" element={<GroupDetail />} />
             <Route path="/group/:groupId/transaction/new" element={<NewTransaction />} />
-            <Route path="/group/:groupId/transaction/:transactionId/edit" element={<EditTransaction />} />
+            <Route
+              path="/group/:groupId/transaction/:transactionId/edit"
+              element={<EditTransaction />}
+            />
             <Route path="/map/:location" element={<MapContainer />} />
           </Routes>
         </Router>

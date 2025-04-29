@@ -2,11 +2,25 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  Container, Typography, TextField, Dialog,
-  DialogTitle, DialogContent, DialogActions, List,
-  ListItem, ListItemText, Paper, Box, AppBar, Toolbar,
-  IconButton, ListItemSecondaryAction, SpeedDial, SpeedDialIcon,
-  Button
+  Container,
+  Typography,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Box,
+  AppBar,
+  Toolbar,
+  IconButton,
+  ListItemSecondaryAction,
+  SpeedDial,
+  SpeedDialIcon,
+  Button,
 } from '@mui/material';
 import PaidIcon from '@mui/icons-material/Paid';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -93,8 +107,8 @@ export default function Home() {
                     secondary={`${group.people.length} people · ${group.transactions.length} transactions`}
                   />
                   <ListItemSecondaryAction>
-                    <IconButton 
-                      edge="end" 
+                    <IconButton
+                      edge="end"
                       aria-label="delete"
                       onClick={(e) => handleDeleteClick(e, group.id)}
                       color="error"
@@ -138,15 +152,12 @@ export default function Home() {
           </DialogActions>
         </Dialog>
 
-        <Dialog
-          open={deleteConfirmOpen}
-          onClose={handleDeleteCancel}
-        >
+        <Dialog open={deleteConfirmOpen} onClose={handleDeleteCancel}>
           <DialogTitle>Delete Group</DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to delete this group and all its transactions?
-              This action cannot be undone.
+              Are you sure you want to delete this group and all its transactions? This action
+              cannot be undone.
             </Typography>
           </DialogContent>
           <DialogActions>

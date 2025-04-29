@@ -2,10 +2,25 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  Container, Typography, Button, TextField, FormControl,
-  InputLabel, Select, MenuItem, FormGroup, FormControlLabel,
-  Checkbox, Box, AppBar, Toolbar, IconButton, Paper,
-  CircularProgress, Snackbar, Alert
+  Container,
+  Typography,
+  Button,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Box,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Paper,
+  CircularProgress,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -28,9 +43,9 @@ export default function NewTransaction() {
   const [locationError, setLocationError] = useState<string | null>(null);
 
   const handleParticipantToggle = (personId: string) => {
-    setParticipants(prev => {
+    setParticipants((prev) => {
       if (prev.includes(personId)) {
-        return prev.filter(id => id !== personId);
+        return prev.filter((id) => id !== personId);
       } else {
         return [...prev, personId];
       }
@@ -49,7 +64,7 @@ export default function NewTransaction() {
       paidById,
       participants,
       date,
-      location: location || undefined
+      location: location || undefined,
     });
 
     navigate(`/group/${groupId}`);
@@ -58,7 +73,7 @@ export default function NewTransaction() {
   const handleGetCurrentLocation = async () => {
     setIsLoadingLocation(true);
     setLocationError(null);
-    
+
     try {
       const address = await getCurrentLocation();
       setLocation(address);
@@ -79,7 +94,7 @@ export default function NewTransaction() {
 
     // Add event listener
     document.addEventListener('keydown', handleEscKey);
-    
+
     // Remove event listener on cleanup
     return () => {
       document.removeEventListener('keydown', handleEscKey);
@@ -113,7 +128,7 @@ export default function NewTransaction() {
             <Typography variant="h5" component="h2" gutterBottom>
               Add a New Transaction
             </Typography>
-            
+
             <TextField
               label="Description"
               fullWidth
@@ -122,7 +137,7 @@ export default function NewTransaction() {
               onChange={(e) => setDescription(e.target.value)}
               required
             />
-            
+
             <TextField
               label="Amount"
               type="number"
@@ -135,7 +150,7 @@ export default function NewTransaction() {
               }}
               required
             />
-            
+
             <FormControl fullWidth margin="normal" required>
               <InputLabel id="paid-by-label">Paid By</InputLabel>
               <Select
@@ -151,7 +166,7 @@ export default function NewTransaction() {
                 ))}
               </Select>
             </FormControl>
-            
+
             <TextField
               label="Date"
               type="date"
@@ -164,7 +179,7 @@ export default function NewTransaction() {
               }}
               required
             />
-            
+
             <TextField
               label="Location (optional)"
               fullWidth
@@ -182,17 +197,17 @@ export default function NewTransaction() {
                 startIcon={isLoadingLocation ? <CircularProgress size={20} /> : <LocationOnIcon />}
                 variant="outlined"
                 fullWidth
-                sx={{ 
+                sx={{
                   display: 'flex',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  height: '48px'
+                  height: '48px',
                 }}
               >
                 {isLoadingLocation ? 'Getting Location...' : 'Use My Current Location'}
               </Button>
             </Box>
-            
+
             <Typography variant="subtitle1" sx={{ mt: 2 }}>
               Participants
             </Typography>
@@ -212,18 +227,10 @@ export default function NewTransaction() {
             </FormGroup>
 
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <Button 
-                component={Link} 
-                to={`/group/${groupId}`} 
-                variant="outlined"
-              >
+              <Button component={Link} to={`/group/${groupId}`} variant="outlined">
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                variant="contained" 
-                color="primary"
-              >
+              <Button type="submit" variant="contained" color="primary">
                 Add Transaction
               </Button>
             </Box>
@@ -231,9 +238,9 @@ export default function NewTransaction() {
         </Paper>
       </Container>
 
-      <Snackbar 
-        open={locationError !== null} 
-        autoHideDuration={6000} 
+      <Snackbar
+        open={locationError !== null}
+        autoHideDuration={6000}
         onClose={() => setLocationError(null)}
       >
         <Alert onClose={() => setLocationError(null)} severity="error">

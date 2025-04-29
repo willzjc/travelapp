@@ -2,12 +2,32 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import {
-  Container, Typography, Button, TextField, Dialog,
-  DialogTitle, DialogContent, DialogActions, List,
-  ListItem, ListItemText, Paper, Box, Tabs, Tab,
-  AppBar, Toolbar, IconButton, Card, CardContent,
-  Divider, ButtonGroup, Chip, Menu, MenuItem,
-  SpeedDial
+  Container,
+  Typography,
+  Button,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Box,
+  Tabs,
+  Tab,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Card,
+  CardContent,
+  Divider,
+  ButtonGroup,
+  Chip,
+  Menu,
+  MenuItem,
+  SpeedDial,
 } from '@mui/material';
 import { useSwipeable } from 'react-swipeable';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -43,7 +63,17 @@ function TabPanel(props: TabPanelProps) {
 
 export default function GroupDetail() {
   const { groupId } = useParams<{ groupId: string }>();
-  const { getGroupById, addPerson, calculateDebts, deleteTransaction, deleteGroup, openMap, isMapOpen, mapLocation, closeMap } = useApp();
+  const {
+    getGroupById,
+    addPerson,
+    calculateDebts,
+    deleteTransaction,
+    deleteGroup,
+    openMap,
+    isMapOpen,
+    mapLocation,
+    closeMap,
+  } = useApp();
   const navigate = useNavigate();
   const [value, setValue] = useState(0);
   const [openAddPerson, setOpenAddPerson] = useState(false);
@@ -142,7 +172,7 @@ export default function GroupDetail() {
   }
 
   const findPersonName = (id: string) => {
-    const person = group.people.find(p => p.id === id);
+    const person = group.people.find((p) => p.id === id);
     return person ? person.name : 'Unknown';
   };
 
@@ -150,30 +180,16 @@ export default function GroupDetail() {
     <>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={() => navigate('/')}
-            aria-label="back"
-          >
+          <IconButton edge="start" color="inherit" onClick={() => navigate('/')} aria-label="back">
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {group.name}
           </Typography>
-          <IconButton
-            edge="end"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleMenuOpen}
-          >
+          <IconButton edge="end" color="inherit" aria-label="menu" onClick={handleMenuOpen}>
             <MoreVertIcon />
           </IconButton>
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={Boolean(menuAnchorEl)}
-            onClose={handleMenuClose}
-          >
+          <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
             <MenuItem onClick={handleDeleteGroupClick} sx={{ color: 'error.main' }}>
               <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
               Delete Group
@@ -192,7 +208,9 @@ export default function GroupDetail() {
 
         <div {...swipeHandlers}>
           <TabPanel value={value} index={0}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
+            >
               <Typography variant="h5" component="h2">
                 Transactions
               </Typography>
@@ -221,9 +239,10 @@ export default function GroupDetail() {
                       </Box>
                       <Divider sx={{ my: 1 }} />
                       <Typography variant="body2">
-                        Participants: {transaction.participants.map(id => findPersonName(id)).join(', ')}
+                        Participants:{' '}
+                        {transaction.participants.map((id) => findPersonName(id)).join(', ')}
                       </Typography>
-                      
+
                       {transaction.location && (
                         <Box sx={{ mt: 1 }}>
                           <Chip
@@ -235,17 +254,19 @@ export default function GroupDetail() {
                           />
                         </Box>
                       )}
-                      
+
                       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                         <ButtonGroup variant="outlined" size="small">
-                          <Button 
+                          <Button
                             startIcon={<EditIcon />}
-                            onClick={() => navigate(`/group/${groupId}/transaction/${transaction.id}/edit`)}
+                            onClick={() =>
+                              navigate(`/group/${groupId}/transaction/${transaction.id}/edit`)
+                            }
                           >
                             Edit
                           </Button>
-                          <Button 
-                            startIcon={<DeleteIcon />} 
+                          <Button
+                            startIcon={<DeleteIcon />}
                             color="error"
                             onClick={() => handleDeleteClick(transaction.id)}
                           >
@@ -261,7 +282,9 @@ export default function GroupDetail() {
           </TabPanel>
 
           <TabPanel value={value} index={1}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
+            >
               <Typography variant="h5" component="h2">
                 People
               </Typography>
@@ -299,8 +322,10 @@ export default function GroupDetail() {
               <List>
                 {debts.map((debt, index) => (
                   <ListItem key={index} divider>
-                    <ListItemText 
-                      primary={`${findPersonName(debt.fromPersonId)} owes ${findPersonName(debt.toPersonId)} $${debt.amount.toFixed(2)}`} 
+                    <ListItemText
+                      primary={`${findPersonName(debt.fromPersonId)} owes ${findPersonName(
+                        debt.toPersonId
+                      )} $${debt.amount.toFixed(2)}`}
                     />
                   </ListItem>
                 ))}
@@ -335,13 +360,12 @@ export default function GroupDetail() {
       </Dialog>
 
       {/* Delete Transaction Confirmation Dialog */}
-      <Dialog
-        open={deleteConfirmOpen}
-        onClose={handleDeleteCancel}
-      >
+      <Dialog open={deleteConfirmOpen} onClose={handleDeleteCancel}>
         <DialogTitle>Delete Transaction</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete this transaction? This action cannot be undone.</Typography>
+          <Typography>
+            Are you sure you want to delete this transaction? This action cannot be undone.
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDeleteCancel}>Cancel</Button>
@@ -350,17 +374,14 @@ export default function GroupDetail() {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* Delete Group Confirmation Dialog */}
-      <Dialog
-        open={deleteGroupConfirmOpen}
-        onClose={handleDeleteGroupCancel}
-      >
+      <Dialog open={deleteGroupConfirmOpen} onClose={handleDeleteGroupCancel}>
         <DialogTitle>Delete Group</DialogTitle>
         <DialogContent>
           <Typography>
-            Are you sure you want to delete this entire group and all its transactions? 
-            This action cannot be undone.
+            Are you sure you want to delete this entire group and all its transactions? This action
+            cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -370,17 +391,13 @@ export default function GroupDetail() {
           </Button>
         </DialogActions>
       </Dialog>
-      
+
       {/* Map Side Pane */}
-      <MapSidePane 
-        location={mapLocation}
-        open={isMapOpen}
-        onClose={closeMap}
-      />
+      <MapSidePane location={mapLocation} open={isMapOpen} onClose={closeMap} />
 
       {/* Add floating SpeedDial for adding transactions or people based on current tab */}
       <SpeedDial
-        ariaLabel={value === 1 ? "Add Person" : "Add Transaction"}
+        ariaLabel={value === 1 ? 'Add Person' : 'Add Transaction'}
         sx={{ position: 'fixed', bottom: 16, right: 16 }}
         icon={value === 1 ? <PersonIcon /> : <ReceiptIcon />}
         onClick={() => {

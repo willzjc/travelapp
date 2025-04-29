@@ -10,7 +10,11 @@ interface AppContextType {
   addTransaction: (groupId: string, transaction: Omit<Transaction, 'id'>) => void;
   getGroupById: (groupId: string) => Group | undefined;
   getTransactionById: (groupId: string, transactionId: string) => Transaction | undefined;
-  editTransaction: (groupId: string, transactionId: string, transaction: Omit<Transaction, 'id'>) => void;
+  editTransaction: (
+    groupId: string,
+    transactionId: string,
+    transaction: Omit<Transaction, 'id'>
+  ) => void;
   deleteTransaction: (groupId: string, transactionId: string) => void;
   deleteGroup: (groupId: string) => void;
   calculateDebts: (groupId: string) => Debt[];
@@ -26,24 +30,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [groups, setGroups] = useState<Group[]>(() => {
     // Check if there are existing groups in localStorage
     const savedGroups = localStorage.getItem('groups');
-    
+
     if (savedGroups) {
       try {
         const parsedGroups = JSON.parse(savedGroups);
-        
+
         // Check if the first group has transactions with location data
         // If not, create fresh demo data instead
-        const hasLocationData = parsedGroups.length > 0 && 
+        const hasLocationData =
+          parsedGroups.length > 0 &&
           parsedGroups[0].transactions?.some((t: Transaction) => t.location);
-        
+
         if (hasLocationData) {
           return parsedGroups;
         }
       } catch (e) {
-        console.error("Error parsing saved groups:", e);
+        console.error('Error parsing saved groups:', e);
       }
     }
-    
+
     // If no valid groups exist or they don't have location data, create a fresh demo group
     return [createDemoGroup()];
   });
@@ -73,73 +78,87 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getGroupById = (groupId: string) => {
-    return groups.find(group => group.id === groupId);
+    return groups.find((group) => group.id === groupId);
   };
 
   const addPerson = (groupId: string, name: string) => {
-    setGroups(groups.map(group => {
-      if (group.id === groupId) {
-        return {
-          ...group,
-          people: [...group.people, { id: uuidv4(), name }]
-        };
-      }
-      return group;
-    }));
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            people: [...group.people, { id: uuidv4(), name }],
+          };
+        }
+        return group;
+      })
+    );
   };
 
   const addTransaction = (groupId: string, transaction: Omit<Transaction, 'id'>) => {
-    setGroups(groups.map(group => {
-      if (group.id === groupId) {
-        return {
-          ...group,
-          transactions: [...group.transactions, { id: uuidv4(), ...transaction }]
-        };
-      }
-      return group;
-    }));
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            transactions: [...group.transactions, { id: uuidv4(), ...transaction }],
+          };
+        }
+        return group;
+      })
+    );
   };
 
   const getTransactionById = (groupId: string, transactionId: string) => {
     const group = getGroupById(groupId);
     if (!group) return undefined;
-    return group.transactions.find(transaction => transaction.id === transactionId);
+    return group.transactions.find((transaction) => transaction.id === transactionId);
   };
 
-  const editTransaction = (groupId: string, transactionId: string, updatedTransaction: Omit<Transaction, 'id'>) => {
-    setGroups(groups.map(group => {
-      if (group.id === groupId) {
-        return {
-          ...group,
-          transactions: group.transactions.map(transaction => {
-            if (transaction.id === transactionId) {
-              return {
-                ...transaction,
-                ...updatedTransaction
-              };
-            }
-            return transaction;
-          })
-        };
-      }
-      return group;
-    }));
+  const editTransaction = (
+    groupId: string,
+    transactionId: string,
+    updatedTransaction: Omit<Transaction, 'id'>
+  ) => {
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            transactions: group.transactions.map((transaction) => {
+              if (transaction.id === transactionId) {
+                return {
+                  ...transaction,
+                  ...updatedTransaction,
+                };
+              }
+              return transaction;
+            }),
+          };
+        }
+        return group;
+      })
+    );
   };
 
   const deleteTransaction = (groupId: string, transactionId: string) => {
-    setGroups(groups.map(group => {
-      if (group.id === groupId) {
-        return {
-          ...group,
-          transactions: group.transactions.filter(transaction => transaction.id !== transactionId)
-        };
-      }
-      return group;
-    }));
+    setGroups(
+      groups.map((group) => {
+        if (group.id === groupId) {
+          return {
+            ...group,
+            transactions: group.transactions.filter(
+              (transaction) => transaction.id !== transactionId
+            ),
+          };
+        }
+        return group;
+      })
+    );
   };
 
   const deleteGroup = (groupId: string) => {
-    setGroups(groups.filter(group => group.id !== groupId));
+    setGroups(groups.filter((group) => group.id !== groupId));
   };
 
   const calculateDebts = (groupId: string): Debt[] => {
@@ -148,11 +167,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     // Store direct debts between individuals (who owes whom and how much)
     const directDebts: Record<string, Record<string, number>> = {};
-    
+
     // Initialize directDebts structure
-    group.people.forEach(person => {
+    group.people.forEach((person) => {
       directDebts[person.id] = {};
-      group.people.forEach(otherPerson => {
+      group.people.forEach((otherPerson) => {
         if (person.id !== otherPerson.id) {
           directDebts[person.id][otherPerson.id] = 0;
         }
@@ -160,11 +179,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Calculate direct debts from each transaction
-    group.transactions.forEach(transaction => {
+    group.transactions.forEach((transaction) => {
       const paidById = transaction.paidById;
       const amountPerPerson = transaction.amount / transaction.participants.length;
-      
-      transaction.participants.forEach(participantId => {
+
+      transaction.participants.forEach((participantId) => {
         if (participantId !== paidById) {
           // The participant owes money to the payer
           directDebts[participantId][paidById] += amountPerPerson;
@@ -173,13 +192,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
 
     // Simplify debts (if A owes B $5 and B owes A $3, then A only owes B $2)
-    group.people.forEach(personA => {
-      group.people.forEach(personB => {
+    group.people.forEach((personA) => {
+      group.people.forEach((personB) => {
         if (personA.id === personB.id) return;
-        
+
         const aOwesB = directDebts[personA.id][personB.id];
         const bOwesA = directDebts[personB.id][personA.id];
-        
+
         if (aOwesB > 0 && bOwesA > 0) {
           if (aOwesB > bOwesA) {
             directDebts[personA.id][personB.id] = aOwesB - bOwesA;
@@ -200,7 +219,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           debts.push({
             fromPersonId,
             toPersonId,
-            amount: parseFloat(amount.toFixed(2))
+            amount: parseFloat(amount.toFixed(2)),
           });
         }
       });
