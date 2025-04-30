@@ -12,6 +12,26 @@ A React application for splitting expenses among group members during trips.
 
 ## Installation
 
+### Prerequisites
+
+This was developed within MacOs, but within Windows there are similar methods to [install Node Version Manager](https://github.com/nvm-sh/nvm)
+
+```sh
+# First we need npm / nodejs - this can be done via using nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+
+# Then ask NVM to install node
+nvm install node
+
+# After which, we use node / set as default
+nvm use node
+
+# Enable react-script globally
+npm install -g react-script
+```
+
+### Repository installation
+
 1. Clone this repository
 2. Install dependencies:
 
