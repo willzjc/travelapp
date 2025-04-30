@@ -5,6 +5,8 @@
 export interface Person {
   id: string;
   name: string;
+  // New field that can link to a Google user ID
+  googleUserId?: string;
 }
 
 /**
@@ -19,6 +21,8 @@ export interface Transaction {
   paidById: string; // ID of the person who paid
   participants: string[]; // IDs of all people who should share this expense
   location?: string; // Optional field for where the expense occurred
+  createdBy?: string; // Google user ID of the person who created the transaction
+  createdAt?: string; // When the transaction was created
 }
 
 /**
@@ -30,6 +34,8 @@ export interface Group {
   name: string; // Name of the trip or group
   people: Person[]; // All members of this group
   transactions: Transaction[]; // All expenses recorded for this group
+  createdBy?: string; // Google user ID of the person who created the group
+  createdAt?: string; // When the group was created
 }
 
 /**
@@ -40,4 +46,14 @@ export interface Debt {
   fromPersonId: string; // Person who owes money
   toPersonId: string; // Person who is owed money
   amount: number; // Amount to be paid
+}
+
+/**
+ * Represents user data from Google authentication
+ */
+export interface GoogleUser {
+  id: string; // Google's user ID
+  name: string;
+  email: string;
+  picture?: string; // URL to profile picture
 }

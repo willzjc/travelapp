@@ -2,6 +2,7 @@ import { createContext, useState, useContext, ReactNode, useEffect } from 'react
 import { v4 as uuidv4 } from 'uuid';
 import { Group, Transaction, Debt } from '../types/models';
 import { createDemoGroup } from '../utils/demoData';
+import { useAuth } from './AuthContext';
 
 interface AppContextType {
   groups: Group[];
@@ -27,6 +28,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+
   const [groups, setGroups] = useState<Group[]>(() => {
     // Check if there are existing groups in localStorage
     const savedGroups = localStorage.getItem('groups');
@@ -73,7 +76,20 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const addGroup = (name: string) => {
     const id = uuidv4();
-    setGroups([...groups, { id, name, people: [], transactions: [] }]);
+    const now = new Date().toISOString();
+
+    setGroups([
+      ...groups,
+      {
+        id,
+        name,
+        people: [],
+        transactions: [],
+        createdBy: user?.uid,
+        createdAt: now,
+      },
+    ]);
+
     return id;
   };
 
@@ -96,12 +112,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addTransaction = (groupId: string, transaction: Omit<Transaction, 'id'>) => {
+    const now = new Date().toISOString();
+
     setGroups(
       groups.map((group) => {
         if (group.id === groupId) {
           return {
             ...group,
-            transactions: [...group.transactions, { id: uuidv4(), ...transaction }],
+            transactions: [
+              ...group.transactions,
+              {
+                id: uuidv4(),
+                ...transaction,
+                createdBy: user?.uid,
+                createdAt: now,
+              },
+            ],
           };
         }
         return group;

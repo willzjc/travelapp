@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { useAuth } from '../context/AuthContext';
 import {
   Container,
   Typography,
@@ -24,9 +25,12 @@ import {
 } from '@mui/material';
 import PaidIcon from '@mui/icons-material/Paid';
 import DeleteIcon from '@mui/icons-material/Delete';
+import UserMenu from '../components/UserMenu';
+import GoogleSignIn from '../components/GoogleSignIn';
 
 export default function Home() {
   const { groups, addGroup, deleteGroup } = useApp();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [groupName, setGroupName] = useState('');
@@ -34,6 +38,11 @@ export default function Home() {
   const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
 
   const handleOpen = () => {
+    // If not authenticated, prompt to log in first
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
     setOpen(true);
   };
 
@@ -77,13 +86,33 @@ export default function Home() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             travelapp
           </Typography>
+          <UserMenu />
         </Toolbar>
       </AppBar>
       <Container maxWidth="md" sx={{ mt: 4 }}>
+        {!isAuthenticated && (
+          <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
+              Welcome to travelapp!
+            </Typography>
+            <Typography variant="body1" paragraph>
+              Sign in with Google to sync your trips across devices.
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+              <GoogleSignIn />
+            </Box>
+          </Paper>
+        )}
+        
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h4" component="h1">
             Your Trip Groups
           </Typography>
+          {isAuthenticated && (
+            <Typography variant="subtitle1">
+              Signed in as {user?.displayName}
+            </Typography>
+          )}
         </Box>
 
         {groups.length === 0 ? (

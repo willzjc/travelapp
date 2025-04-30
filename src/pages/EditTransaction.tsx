@@ -268,26 +268,23 @@ export default function EditTransaction() {
             </FormGroup>
 
             <Box
-              sx={{ mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}
             >
               <Button
-                variant="contained"
+                variant="outlined"
                 color="error"
                 startIcon={<DeleteIcon />}
                 onClick={handleDeleteClick}
-                sx={{ minHeight: '42px' }}
+                size="medium"
               >
-                Delete Transaction
+                Delete
               </Button>
-
-              <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button component={Link} to={`/group/${groupId}`} variant="outlined">
-                  Cancel
-                </Button>
-                <Button type="submit" variant="contained" color="primary">
-                  Save Changes
-                </Button>
-              </Box>
+              <Button component={Link} to={`/group/${groupId}`} variant="outlined">
+                Cancel
+              </Button>
+              <Button type="submit" variant="contained" color="primary">
+                Save
+              </Button>
             </Box>
           </form>
         </Paper>
