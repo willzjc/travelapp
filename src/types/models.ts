@@ -1,27 +1,43 @@
+/**
+ * Represents an individual participant in the expense-splitting app.
+ * Each person has a unique ID and name.
+ */
 export interface Person {
   id: string;
   name: string;
 }
 
+/**
+ * Represents a financial transaction or expense within a group.
+ * Tracks who paid, the amount, participants involved, and other details.
+ */
 export interface Transaction {
-  id: string;
-  description: string;
-  amount: number;
-  date: string;
-  paidById: string;
-  participants: string[];
-  location?: string; // Add optional location field
+  id: string; // Unique identifier for the transaction
+  description: string; // Description of what the expense was for
+  amount: number; // Total amount of the expense
+  date: string; // When the transaction occurred
+  paidById: string; // ID of the person who paid
+  participants: string[]; // IDs of all people who should share this expense
+  location?: string; // Optional field for where the expense occurred
 }
 
+/**
+ * Represents a trip or group of people sharing expenses.
+ * Contains the group members and all transactions within the group.
+ */
 export interface Group {
   id: string;
-  name: string;
-  people: Person[];
-  transactions: Transaction[];
+  name: string; // Name of the trip or group
+  people: Person[]; // All members of this group
+  transactions: Transaction[]; // All expenses recorded for this group
 }
 
+/**
+ * Represents a calculated debt between two people after reconciling expenses.
+ * Shows who owes money to whom and how much.
+ */
 export interface Debt {
-  fromPersonId: string;
-  toPersonId: string;
-  amount: number;
+  fromPersonId: string; // Person who owes money
+  toPersonId: string; // Person who is owed money
+  amount: number; // Amount to be paid
 }
