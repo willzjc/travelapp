@@ -10,8 +10,6 @@ import MapSidePane from './components/MapSidePane';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import { useState } from 'react';
-// Initialize Firebase (imported but not directly used in this file)
-import './firebase/config';
 
 const theme = createTheme({
   palette: {

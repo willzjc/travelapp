@@ -1,18 +1,19 @@
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signOut, 
-  onAuthStateChanged, 
-  User as FirebaseUser 
-} from 'firebase/auth';
-import { auth } from '../firebase/config';
+import { GoogleOAuthProvider, useGoogleLogin, googleLogout } from '@react-oauth/google';
+import { googleClientId, isGoogleAuthConfigured } from '../utils/envConfig';
 
 interface UserProfile {
-  uid: string;
+  uid: string;         // Google's sub field
   displayName: string | null;
   email: string | null;
   photoURL: string | null;
+}
+
+interface GoogleUserCredential {
+  sub: string;
+  name: string;
+  email: string;
+  picture?: string;
 }
 
 interface AuthContextType {
@@ -25,57 +26,62 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+// The inner provider that uses the Google login hook
+const AuthProviderInner = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Convert Firebase user to our user profile format
-  const formatUser = (user: FirebaseUser): UserProfile => {
-    return {
-      uid: user.uid,
-      displayName: user.displayName,
-      email: user.email,
-      photoURL: user.photoURL,
-    };
-  };
-
-  // Listen for auth state changes
+  // Try to load user from localStorage on initial mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(formatUser(user));
-      } else {
-        setUser(null);
+    const savedUser = localStorage.getItem('travelapp-user');
+    if (savedUser) {
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch (e) {
+        console.error('Error parsing saved user:', e);
       }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
-  // Sign in with Google
+  // Google login handler
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        // Get user info from ID token
+        const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenResponse.access_token}`);
+        const userInfo: GoogleUserCredential = await response.json();
+        
+        const profile: UserProfile = {
+          uid: userInfo.sub,
+          displayName: userInfo.name,
+          email: userInfo.email,
+          photoURL: userInfo.picture || null,
+        };
+        
+        setUser(profile);
+        localStorage.setItem('travelapp-user', JSON.stringify(profile));
+      } catch (error) {
+        console.error('Error getting user info:', error);
+      }
+    },
+    onError: (error) => console.error('Login Failed:', error),
+  });
+
   const signInWithGoogle = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
+      await googleLogin();
     } finally {
       setLoading(false);
     }
   };
 
-  // Sign out
   const logout = async () => {
-    try {
-      setLoading(true);
-      await signOut(auth);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    } finally {
-      setLoading(false);
-    }
+    googleLogout();
+    setUser(null);
+    localStorage.removeItem('travelapp-user');
+    return Promise.resolve();
   };
 
   const value = {
@@ -87,6 +93,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+// The outer provider that sets up the Google OAuth provider
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  if (!isGoogleAuthConfigured()) {
+    console.warn('Google Client ID not configured. Authentication will not work.');
+    return <>{children}</>;
+  }
+  
+  return (
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <AuthProviderInner>{children}</AuthProviderInner>
+    </GoogleOAuthProvider>
+  );
 };
 
 export const useAuth = () => {

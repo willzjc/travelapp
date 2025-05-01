@@ -1,4 +1,4 @@
-import { Button, Typography, Box } from '@mui/material';
+import { Button, Typography, Box, CircularProgress } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useAuth } from '../context/AuthContext';
 
@@ -25,7 +25,7 @@ const GoogleSignIn: React.FC<GoogleSignInProps> = ({ onSuccess }) => {
   };
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
+    return <CircularProgress size={24} />;
   }
 
   if (isAuthenticated && user) {

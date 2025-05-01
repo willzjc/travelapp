@@ -26,6 +26,18 @@ export const getEnvVariable = (key: string): string => {
 };
 
 /**
+ * Google OAuth Client ID - primary auth method
+ */
+export const googleClientId = getEnvVariable('GOOGLE_CLIENT_ID');
+
+/**
+ * Check if Google authentication is properly configured
+ */
+export const isGoogleAuthConfigured = (): boolean => {
+  return Boolean(googleClientId);
+};
+
+/**
  * Firebase configuration using environment variables without fallbacks
  */
 export const firebaseConfig = {
